@@ -5,6 +5,7 @@ export class Store {
 
   constructor(reducers = {}, initialState = {}) {
     this.reducers = reducers;
+    this.subscribers = [];
     this.state = this.reduce(initialState, {});
   }
 
@@ -12,15 +13,27 @@ export class Store {
     return this.state;
   }
 
+  subscribe(fn) {
+    this.subscribers = [...this.subscribers, fn];
+    this.notify();
+    return () => {
+      this.subscribers = this.subscribers.filter((sub) => sub !== fn);
+    };
+  }
   dispatch(action) {
     this.state = this.reduce(this.state, action);
+    this.notify();
+  }
+
+  private notify() {
+    this.subscribers.forEach((fn) => fn(this.value));
   }
 
   reduce(state, action) {
     const newState = {};
-    for(const prop in this.reducers) {
+    for (const prop in this.reducers) {
       newState[prop] = this.reducers[prop](state[prop], action);
-    };
+    }
     return newState;
   }
 }

@@ -2,7 +2,7 @@ _site
 .git
 .sass-cache
 .jekyll-metadata
-node_modules
+/redux_store/node_modules
 .DS_Store
 .idea
 npm-debug.log
